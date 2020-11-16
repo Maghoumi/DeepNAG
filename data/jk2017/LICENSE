@@ -1,0 +1,137 @@
+Copyright 2017 the University of Central Florida Research Foundation, Inc.
+All rights reserved.
+
+    Eugene M. Taranta II <etaranta@gmail.com>
+    Amirreza Samiei <samiei@knights.ucf.edu>
+    Mehran Maghoumi <mehran@cs.ucf.edu>
+    Pooya Khaloo <pooya@cs.ucf.edu>
+    Corey R. Pittman <cpittman@knights.ucf.edu>
+    Joseph J. LaViola Jr. <jjl@cs.ucf.edu>
+
+Non-Exclusive Software License: Florida Public Educational Institution 
+
+This Agreement made by and between University of Central Florida Research 
+Foundation Inc., (“LICENSOR”) a not-for-profit direct service organization 
+for, and acting as an instrumentality of the University of Central Florida 
+(“UCF”) organized and established under Florida law, whose address is 12201
+Research Parkway, Suite 501, Orlando, FL 32826, and  third party Academic 
+Faculty, Researcher(s) and/or Student(s) downloading the SOFTWARE (hereinafter
+"LICENSEE").
+
+For good and valuable consideration, receipt and sufficiency of which is 
+hereby acknowledged, , the LICENSEE, by download of the SOFTWARE, and LICENSOR 
+by offering same, agree as follows: 
+
+1. Rights Granted
+
+    Non-Exclusive License. Subject to the terms and conditions of this 
+    academic license, the Licensor hereby grants to the Licensee, a 
+    royalty-free, non-sublicensable, non-commercial, non-exclusive, academic
+    research license to this software and associated documentation files 
+    (the "SOFTWARE"), to use the SOFTWARE with restriction to academic 
+    research use only, but including without limitation the rights to use, 
+    copy, modify, merge, publish, but not to distribute the work, as defined
+    herein, and specifically the portions thereof provided to LICENSEE as 
+    described in Section 2 (“SOFTWARE”), for educational and research
+    purposes. 
+
+    Licensor expressly retains the right to use the SOFTWARE for any and all
+    commercial, research and academic purposes. 
+
+2. Description of the SOFTWARE
+
+    The SOFTWARE which is also referred as “Jackknife” is the subject of
+    this Agreement, includes by part: ‘Synthetic Data Generation of Time
+    Series Data’ sub-program which is protected by copyright registration 
+    (Case Number: 1-4444559149) and patent application (Application number:
+    62/362,922) by UCF. This sub-program was used within the main SOFTWARE to 
+    obtain the results for the paper “Jackknife: A Reliable Recognizer with Few 
+    Samples and Many Modalities, CHI 2017”. 
+
+3. Delivery of the Work
+
+    Licensor will provide access to the Licensee via a private GITHUB 
+    repository available at https://github.com/ISUE/Jackknife. Subject to the 
+    terms of this Agreement, Licensee shall download SOFTWARE to Licensee’s 
+    server. 
+
+4. Licensor's Representations
+
+    Except to the extent caused by Licensor’s willful misconduct and/or gross 
+    negligence and only then to the extent permitted by 768.28, Florida 
+    Statutes, Licensee accepts all liability in connection with Licensee’s use 
+    of the Work and shall hold Licensor harmless from any claims, actions, 
+    and/or damages that result from Licensee’s use of the Work.
+
+5. Consideration
+
+    In consideration of this Agreement, the Licensee shall acknowledge 
+    Licensor’s ownership of SOFTWARE and will include the following statement 
+    on Licensee’s applicable website: Licensed by University of Central Florida 
+    Research Foundation, Inc. 
+
+    Publications resulting from Licensee’s use of the SOFTWARE shall 
+    appropriately credit the SOFTWARE and cite the authors of publication 
+    titled, “Jackknife: A Reliable Recognizer with Few Samples and Many 
+    Modalities, CHI 2017.”
+ 
+6. Revisions
+
+    The Licensor retains all rights to revise and/or modify the SOFTWARE. 
+    The license granted herein shall not be construed to confer any rights 
+    upon LICENSEE by implication, estoppel, or otherwise except as 
+    specifically set forth herein.  Any rights not expressly granted herein 
+    are hereby expressly reserved to Licensor.
+
+7. Amendments
+
+    The written provisions contained in this Agreement constitute the sole and 
+    entire Agreement made between the LICENSOR and the LICENSEE concerning this
+    SOFTWARE, and any amendments to this Agreement shall not be valid unless 
+    agreed to by both parties.
+
+8. Construction, Binding Effect, and Assignment
+
+    This Agreement shall be construed and interpreted according to the laws
+    of the State of Florida and shall be binding upon the parties hereto,
+    their heirs, successors, permitted assigns, and personal 
+    representatives.
+
+9. NO WARRANTIES
+
+    LICENSEE AGREES THAT THE RIGHTS GRANTED HEREUNDER ARE MADE AVAILABLE 
+    WITHOUT WARRANTY OF ANY KIND EXPRESS OR IMPLIED.  NOTHING IN THIS 
+    AGREEMENT SHALL BE CONSTRUED AS A REPRESENTATION MADE OR WARRANTY 
+    GIVEN BY UCFRF OR UCF THAT PRACTICE BY LICENSEE OF THE LICENSE GRANTED 
+    HEREUNDER OR USE OF THE SOFTWARE SHALL NOT INFRINGE THE INTELLECTUAL 
+    PROPERTY RIGHTS OF ANY THIRD PARTY.
+
+    THE SOFTWARE IS PROVIDED "AS IS" BY THE COPYRIGHT HOLDER, WITHOUT 
+    WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO 
+    THE WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+    AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDER 
+    BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR 
+    CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF USE, DATA OR 
+    BUSINESS INTERRUPTION), CLAIM, OR OTHER LIABILITY, WHETHER IN AN ACTION 
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE 
+
+10. Limitation of Liability
+
+    To the maximum extent permitted by law, in no event will LICENSOR or UCF be 
+    responsible for any indirect damages, incidental damages, consequential 
+    damages, exemplary damages of any kind, lost goodwill, lost profits, lost 
+    business, and/or any indirect economic damages whatsoever regardless of 
+    whether such damages arise from claims based upon contract, negligence, 
+    tort (including strict liability or other legal theory), a breach of any 
+    warranty or term of this Agreement, and regardless of whether advised or 
+    had reason to know of the possibility of incurring such damages in advance. 
+    
+    Both parties agree that nothing contained herein shall be construed or 
+    interpreted as:  (1) denying to either party any remedy or defense 
+    available to such party under the laws of the State of Florida; (2) the 
+    consent of the State of Florida or its agents or agencies to be sued; or 
+    (3) a waiver of sovereign immunity of the State of Florida beyond the
+    waiver provided in Section 768.28, Florida Statutes.
+
+                [Remainder of Page/Document Intentionally Blank] 

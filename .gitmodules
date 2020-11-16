@@ -1,0 +1,3 @@
+[submodule "pytorch_softdtw_cuda"]
+	path = pytorch_softdtw_cuda
+	url = https://github.com/Maghoumi/pytorch-softdtw-cuda.git
