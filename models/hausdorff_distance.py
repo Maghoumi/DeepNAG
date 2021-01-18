@@ -24,11 +24,11 @@
 import torch
 import numpy as np
 try:
-    from pytorch_softdtw_cuda.soft_dtw_cuda import SoftDTW
+    from external.pytorch_softdtw_cuda.soft_dtw_cuda import SoftDTW
 except ImportError as error:
         if 'softdtw' in error.name:
             print('--------------------------------------------------------------------------------------------')
-            print("Could not import 'soft_dtw_cuda'. Did you forget to initialize this repository's submodules?")
+            print("Could not import 'SoftDTW'. Did you forget to initialize this repository's submodules?")
             print("Run 'git submodule update --init --recursive' and try again!")
             print('--------------------------------------------------------------------------------------------')
         raise

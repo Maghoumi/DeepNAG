@@ -28,6 +28,10 @@ import numpy as np
 from random import Random
 import torch
 
+# Global variable for the animation object. If not used, the animation may not be displayed
+# (see https://stackoverflow.com/questions/41625518/matplotlib-funcanimation-isnt-calling-the-passed-function)
+ani = None
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 class Visualizer2D(object):
@@ -129,6 +133,9 @@ class Visualizer2D(object):
         :param color: the drawing color
         :param alpha: the drawing alpha value
         """
+        if isinstance(pts, torch.Tensor):
+            pts = pts.numpy()
+
         ax = self._ax[self._idx]
         ax.axis('off')
 
@@ -355,5 +362,6 @@ class Visualizer3D(object):
             return tuple(modified)
 
         # Create the animation
-        animation.FuncAnimation(fig, update_plot, frames=range(int(num_frames)),
-                                fargs=(lines, scats,), interval=20, blit=True)
+        global ani
+        ani = animation.FuncAnimation(fig, update_plot, frames=range(int(num_frames)),
+                                      fargs=(lines, scats,), interval=20, blit=True)

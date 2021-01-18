@@ -21,6 +21,7 @@
 # SOFTWARE.
 # ----------------------------------------------------------------------------------------------------------------------
 
+import copy
 import torch
 import torch.nn as nn
 
@@ -54,10 +55,12 @@ class DeepNAG(ModelBase):
                                            betas=(self._opt.beta0, self._opt.beta1))
 
         # Loss-related objects
-        self.loss_names += ['loss_ed', 'loss_cos', 'loss_resample']
+        self.metric_names = ['loss_ed', 'loss_cos', 'loss_resample', 'loss']
         self.loss_ed = None  # The ED loss value
         self.loss_cos = None  # The COS loss value
         self.loss_resample = None  # The resample loss value
+        self.loss = None  # The final loss that we'll minimize
+        self._best_model_which_metric = 'loss'
 
         self._criterion_l1 = nn.L1Loss()
         self._criterion_l2 = nn.MSELoss()
@@ -165,9 +168,41 @@ class DeepNAG(ModelBase):
 
             self.bookkeep()
 
+    def _get_state(self):
+        """
+        Helper function to get the internal state of the model.
+
+        :return: a dictionary containing the internal state of the model.
+        """
+        return {
+            'model': 'DeepNAG',
+            'generator': copy.deepcopy(self._generator.state_dict()),
+            'optimizer': copy.deepcopy(self._optimizer.state_dict()),
+            'normalizer': self._normalizer
+        }
+
+    def _load_state(self, state_dict):
+        """
+        Helper function to load the internal state of a model from a dictionary.
+
+        :param state_dict: the dictionary containing the state to load.
+        """
+        # Make sure we're loading the correct model
+        if state_dict['model'] != 'DeepNAG':
+            raise ValueError('The given model to load is not a DeepNAG model!')
+
+        self._generator.load_state_dict(state_dict['generator'])
+        self._optimizer.load_state_dict(state_dict['optimizer'])
+        self._normalizer = state_dict['normalizer']
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 class DeepNAGNet(nn.Module):
+    """
+    DeepNAG's network model. This model is a recurrent sequence generator.
+    This same generator model is used as the generator network for DeepGAN.
+    """
+
     def __init__(self, latent_dim, output_dim, num_classes):
         """
         Initializes a new DeepNAG model.

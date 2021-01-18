@@ -134,15 +134,15 @@ def load_jk2017(root):
 
     samples = []
 
-    for sname in os.listdir(root):
+    for sname in sorted(os.listdir(root)):
         # Build subject's path
         spath = os.path.join(root, sname)
 
-        for gname in os.listdir(spath):
+        for gname in sorted(os.listdir(spath)):
             # Build the gesture's path for this subject
             gpath = os.path.join(spath, gname)
 
-            for ename in os.listdir(gpath):
+            for ename in sorted(os.listdir(gpath)):
                 # Build the example's path for this subject
                 epath = os.path.join(gpath, ename)
 

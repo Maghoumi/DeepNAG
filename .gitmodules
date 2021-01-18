@@ -1,3 +1,6 @@
-[submodule "pytorch_softdtw_cuda"]
-	path = pytorch_softdtw_cuda
+[submodule "external/pytorch_softdtw_cuda"]
+	path = external/pytorch_softdtw_cuda
 	url = https://github.com/Maghoumi/pytorch-softdtw-cuda.git
+[submodule "external/JitGRU"]
+	path = external/JitGRU
+	url = https://github.com/Maghoumi/JitGRU.git

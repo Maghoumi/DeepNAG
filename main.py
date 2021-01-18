@@ -27,6 +27,7 @@ import sys
 from options import Options
 from dataloader.dataset import Dataset
 from models.DeepNAG import DeepNAG
+from models.DeepGAN import DeepGAN
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -55,32 +56,33 @@ class Logger(object):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def train(dataset, device):
+def train(model_t, dataset, device):
     """
     Trains a model using the given arguments.
 
+    :param model_t: the network model to use
     :param dataset: the dataset
     :param device: the computation device to use
     """
     data_split = dataset.get_split()
-
-    model = DeepNAG(dataset.num_classes, dataset.num_features, dataset.opt, device, dataset.visualizer)
+    model = model_t(dataset.num_classes, dataset.num_features, dataset.opt, device, dataset.visualizer)
     model.run_training_loop(data_split)
     model.save()
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def evaluate(dataset, device):
+def evaluate(model_t, dataset, device):
     """
     Visually evaluate a trained model.
 
+    :param model_t: the network model to use
     :param dataset: the dataset
     :param device: the computation device to use
     """
     visualizer = dataset.visualizer
     data_split = dataset.get_split()
 
-    model = DeepNAG(dataset.num_classes, dataset.num_features, dataset.opt, device, visualizer)
+    model = model_t(dataset.num_classes, dataset.num_features, dataset.opt, device, visualizer)
     model.load(opt.evaluate)
 
     visualizer.visualize(model, data_split.get_data_loader())
@@ -99,10 +101,21 @@ if __name__ == "__main__":
     # Setup output redirection
     sys.stdout = Logger(opt.run_log_file, sys.stdout)
     sys.stderr = Logger(opt.run_err_file, sys.stderr)
+
+    if opt.experiment_name is not None:
+        print(F"Experiment name: {opt.experiment_name}")
+
     print(F"Run directory: {opt.run_dir}")
 
-    # Instantiate the dataset
-    dataset = Dataset.instantiate(opt)
+    # Pick the selected model
+    if opt.model == 'DeepNAG':
+        model_t = DeepNAG
+        print('Selected model: DeepNAG')
+    elif opt.model == 'DeepGAN':
+        model_t = DeepGAN
+        print('Selected model: DeepGAN')
+    else:
+        raise Exception(F"Unknown model '{opt.model}'")
 
     # Determine the computation device to use
     if opt.use_cuda:
@@ -112,7 +125,10 @@ if __name__ == "__main__":
         print("Using CPU")
         device = torch.device('cpu')
 
+    # Instantiate the dataset
+    dataset = Dataset.instantiate(opt)
+
     if opt.evaluate is None:
-        train(dataset, device)
+        train(model_t, dataset, device)
     else:
-        evaluate(dataset, device)
+        evaluate(model_t, dataset, device)

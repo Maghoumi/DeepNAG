@@ -82,6 +82,11 @@ class Dataset:
 
         self._visualizer = None
 
+    def __str__(self):
+        return F"Dataset: '{self.opt.dataset_name}'\n" \
+            F"\tClasses: {self.idx_to_class}\n" \
+            F"\tNum samples: {len(self.samples)}\n"
+
     @property
     def visualizer(self):
         return self._visualizer
@@ -127,6 +132,9 @@ class Dataset:
         for sample in self.samples:
             if dataset_classes is None:
                 sample.y = self.class_to_idx[sample.label]
+
+        # Print a summary about the dataset
+        print(self)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

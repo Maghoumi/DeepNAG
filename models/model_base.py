@@ -62,9 +62,8 @@ class ModelBase(object):
         self._generator = None
         self._optimizer = None
 
-        # Loss-related objects
-        self.loss_names = ['loss']
-        self.loss = None  # The final loss that we'll minimize
+        # The name of the metrics to keep track of
+        self.metric_names = []
 
         # Random noise for latent space representation
         self._latent = torch.FloatTensor(self._opt.batch_size,
@@ -74,7 +73,7 @@ class ModelBase(object):
         self._stats = {}
         self._best_model = None
         self._best_model_metric = np.inf
-        self._best_model_which_metric = 'loss'  # What key in self.stat to use to save the best model?
+        self._best_model_which_metric = None  # What key in self.stat to use to save the best model?
 
         # Create tensorboard writer
         if opt.use_tensorboard > 0:
@@ -117,10 +116,8 @@ class ModelBase(object):
         if latent_vector is None:
             self._generate_new_latent(curr_batch_size)
             latent_vector = self._latent
-        else:
-            # Sanity check
-            if latent_vector.shape[0] != curr_batch_size:
-                raise ValueError("The batch size of the provided latent vector does not match that of the labels vector.")
+        elif latent_vector.shape[0] != curr_batch_size:  # Sanity check
+            raise ValueError("The batch size of the provided latent vector does not match that of the labels vector.")
 
         result = self._generator(latent_vector, labels_one_hot)
 
@@ -133,7 +130,7 @@ class ModelBase(object):
         """
         Runs the training loop on the given data loader
 
-        :param data_loader: the split of data to train on
+        :param data_split: the split of data to train on
         """
         self._data_loader = data_split.get_data_loader()
 
@@ -146,11 +143,21 @@ class ModelBase(object):
             self.begin_epoch()
             self._run_one_epoch(epoch)
             self.end_epoch()
+
+            # Do some logging
             self._log_to_tensorboard('train', epoch)
             stats = self.get_stats()
-            print(F"Epoch {epoch} \t\t(took {stats['deltatime']}) \tloss={stats['loss']}")
+            print(F"Epoch {epoch} \t\t(took {stats['deltatime']})\t"
+                  F"{self._best_model_which_metric}={stats[self._best_model_which_metric]}")
+
+            # Save a checkpoint (if enabled)
+            if self._opt.checkpoint_frequency > 0 and \
+               epoch > 0 and epoch % self._opt.checkpoint_frequency == 0:
+                self.save(save_best=False, suffix=str(epoch))
 
         print("Training finished!")
+        # Save the current state into a checkpoint
+        self.save(save_best=False, suffix=str(self._opt.epochs))
 
     def bookkeep(self):
         """
@@ -158,29 +165,28 @@ class ModelBase(object):
         """
         self._stats['cnt'] += 1
 
-        # Process all losses
-        for loss_name in self.loss_names:
-            if hasattr(self, loss_name):
-                attr = getattr(self, loss_name)
+        # Process all metrics
+        for metric_name in self.metric_names:
+            if hasattr(self, metric_name):
+                attr = getattr(self, metric_name)
 
-                if loss_name not in self._stats:
-                    self._stats[loss_name] = []
+                if metric_name not in self._stats:
+                    self._stats[metric_name] = []
 
-                self._stats[loss_name].append(attr.item() if attr is not None else 0)
+                self._stats[metric_name].append(attr.item() if attr is not None else 0)
             else:
-                raise Exception(F"The loss with the name {loss_name} was not found")
+                raise Exception(F"The metric with the name {metric_name} was not found")
 
     def begin_epoch(self):
         """
         Mark the start of a training epoch.
         """
         self._stats = {'cnt': 0, 'start_time': time.time()}
-        self.loss = None
 
-        # Reset all losses
-        for loss_name in self.loss_names:
-            if hasattr(self, loss_name):
-                setattr(self, loss_name, None)
+        # Reset all metrics
+        for metric_name in self.metric_names:
+            if hasattr(self, metric_name):
+                setattr(self, metric_name, None)
 
     def end_epoch(self):
         """
@@ -190,21 +196,8 @@ class ModelBase(object):
         best_metric_candidate = self.get_stats()[self._best_model_which_metric]
 
         if best_metric_candidate < self._best_model_metric:
-            self._best_model = {
-                'generator': copy.deepcopy(self._generator.state_dict()),
-                'optimizer': copy.deepcopy(self._optimizer.state_dict()),
-                'normalizer': self._normalizer
-            }
+            self._best_model = self._get_state()
             self._best_model_metric = best_metric_candidate
-
-    def load_best_model(self):
-        """
-        Loads the best trained model's weights and optimizer. Useful for evaluting the trained model
-        after evaluation is done.
-        """
-        self._generator.load_state_dict(self._best_model['generator'])
-        self._optimizer.load_state_dict(self._best_model['optimizer'])
-        self._normalizer = self._best_model['normalizer']
 
     def get_stats(self):
         """
@@ -233,13 +226,24 @@ class ModelBase(object):
         result = F"{{'best_{self._best_model_which_metric}': {self._best_model_metric}}} {str(stat)}"
         return result
 
-    def save(self):
+    def save(self, save_best=True, suffix=None):
         """
-        Saves the best model into a checkpoint file
+        Saves the model into a checkpoint file.
+
+        :param save_best: if `True`, will save the model yielding the best metric.
+        :param suffix: an optional suffix to use for the saved filename.
         """
-        path = os.path.join(self._opt.run_checkpoint_dir, 'checkpoint.tar')
-        print(F"Saving the checkpoint in {path}")
-        torch.save(self._best_model, path)
+        # Decide on the model and the filename
+        if save_best:
+            model = self._best_model
+            fname = 'checkpoint-best.tar'
+        else:
+            model = self._get_state()
+            fname = F'checkpoint-{suffix}.tar' if suffix is not None else 'checkpoint.tar'
+
+        path = os.path.join(self._opt.run_checkpoint_dir, fname)
+        print(F"Saving the {'best ' if save_best else ''}checkpoint in '{path}'")
+        torch.save(model, path)
 
     def load(self, path):
         """
@@ -247,12 +251,9 @@ class ModelBase(object):
 
         :param path: the path of the checkpoint file.
         """
-        print(F"Loading the checkpoint from {path}")
+        print(F"Loading the checkpoint from '{path}'...")
         loaded = torch.load(path)
-
-        self._generator.load_state_dict(loaded['generator'])
-        self._optimizer.load_state_dict(loaded['optimizer'])
-        self._normalizer = loaded['normalizer']
+        self._load_state(loaded)
 
     #
     # Private function
@@ -300,17 +301,23 @@ class ModelBase(object):
         stat = self.get_stats()
 
         # Log the overall best metric
-        self._tb_writer.add_scalar(F'best_{self._best_model_which_metric}_{suffix}', self._best_model_metric, epoch)
+        self._tb_writer.add_scalar(F'best_{self._best_model_which_metric}_{suffix}',
+                                   self._best_model_metric,
+                                   epoch)
         # Log the metric that we track and save as the best metric
-        self._tb_writer.add_scalar(F'{self._best_model_which_metric}_{suffix}', stat[self._best_model_which_metric], epoch)
+        self._tb_writer.add_scalar(F'{self._best_model_which_metric}_{suffix}',
+                                   stat[self._best_model_which_metric],
+                                   epoch)
 
-        # Log the loss values
-        self._tb_writer.add_scalar(F'loss_{suffix}', stat['loss'], epoch)
+        # Log the metric values
+        self._tb_writer.add_scalar(F'{self._best_model_which_metric}_{suffix}',
+                                   stat[self._best_model_which_metric],
+                                   epoch)
 
-        for loss_name in self.loss_names:
-            if loss_name in stat:
-                self._tb_writer.add_scalar(F'{loss_name}_{suffix}',
-                                           stat[loss_name],
+        for metric_name in self.metric_names:
+            if metric_name in stat:
+                self._tb_writer.add_scalar(F'{metric_name}_{suffix}',
+                                           stat[metric_name],
                                            epoch)
 
         # Should we visualize?
@@ -324,9 +331,25 @@ class ModelBase(object):
 
     def _run_one_epoch(self, epoch):
         """
-        Runs a single epoch of training.
+        Runs a single epoch (or step) of training.
 
         :param epoch: the epoch counter
+        """
+        raise NotImplementedError()
+
+    def _get_state(self):
+        """
+        Helper function to get the internal state of the model.
+
+        :return: a dictionary containing the internal state of the model.
+        """
+        raise NotImplementedError()
+
+    def _load_state(self, state_dict):
+        """
+        Helper function to load the internal state of a model from a dictionary.
+
+        :param state_dict: the dictionary containing the state to load.
         """
         raise NotImplementedError()
 

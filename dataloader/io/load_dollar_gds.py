@@ -93,7 +93,7 @@ def load_dollar_gds(root):
         print('$1-GDS dataset not found!')
         download_dollar_gds(root)
 
-    dirs = glob.glob(os.path.join(dataset_dir, '*'))
+    dirs = sorted(glob.glob(os.path.join(dataset_dir, '*')))
     samples = []
 
     for dr in dirs:
@@ -102,8 +102,7 @@ def load_dollar_gds(root):
             continue
 
         for speed in ['medium']:  # Can optionally add 'slow' and 'fast' to this list too
-
-            curr_files = glob.glob(os.path.join(dr, speed, '*.xml'))
+            curr_files = sorted(glob.glob(os.path.join(dr, speed, '*.xml')))
 
             for file in curr_files:
                 samples += [parse_xml(file)]
